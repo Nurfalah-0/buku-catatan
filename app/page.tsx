@@ -2,40 +2,31 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { addNote, getNotes, Note } from './actions';
+import { addNote, getNotes, Note } from './utils/notes';
 
 export default function BukuCatatan() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [notes, setNotes] = useState<Note[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getNotes().then(data => {
-      setNotes(data);
-      setLoading(false);
-    });
+    setNotes(getNotes());
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
 
-    await addNote(title, content);
-    const updated = await getNotes();
-    setNotes(updated);
+    addNote(title, content);
+    setNotes(getNotes()); // refresh
 
     setTitle('');
     setContent('');
   };
 
-  if (loading) {
-    return <div className="container">Memuat catatan...</div>;
-  }
-
   return (
     <div className="container">
-      <h1 className="header">Buku Catatan</h1>
+      <h1 className="header">📖 Buku Catatan</h1>
 
       <form onSubmit={handleSubmit} className="form">
         <input
